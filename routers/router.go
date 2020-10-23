@@ -13,7 +13,8 @@ import (
 )
 
 func init() {
-
+	//User router
 	beego.Router("/api/users", &controllers.UsersController{}, "post:Register")
 	beego.Router("/api/users/login", &controllers.UsersController{}, "post:Login")
+	beego.Router("/api/users/update", &controllers.UsersController{}, "post:Update")
 }

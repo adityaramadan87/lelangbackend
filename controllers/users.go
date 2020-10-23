@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"golang.org/x/crypto/bcrypt"
+	"lelangbackend/helper"
 	"lelangbackend/models"
 	"time"
 )
@@ -26,31 +27,44 @@ func (u *UsersController) Register() {
 
 	us, err := models.Register(users)
 	if err != nil {
-		u.Data["json"] = err.Error()
+		helper.Response(1, err.Error(), u.Controller)
 	} else {
-		u.Data["json"] = us
+		helper.Response(0, us, u.Controller)
 	}
 	u.ServeJSON()
 }
 
 func (u *UsersController) Login() {
-	//var phone string
-	//var password string
-
 	phone := u.GetString("phone")
 	password := u.GetString("password")
-
-	//u.Ctx.Input.Bind(phone, "phone")
-	//u.Ctx.Input.Bind(password, "password")
 
 	isSuccess, msg := models.Login(phone, password)
 
 	if isSuccess {
-		u.Data["json"] = map[string]string{"rc": "0", "response": msg}
+		helper.Response(0, msg, u.Controller)
 	} else {
-		u.Data["json"] = map[string]string{"rc": "1", "response": msg}
+		helper.Response(1, msg, u.Controller)
 	}
 
 	u.ServeJSON()
 
+}
+
+func (u *UsersController) Update() {
+	var users models.S_user
+	json.Unmarshal(u.Ctx.Input.RequestBody, &users)
+
+	u.Ctx.Input.Bind(&users.Id, "id")
+	u.Ctx.Input.Bind(&users.Phone, "phone")
+	u.Ctx.Input.Bind(&users.Email, "email")
+	u.Ctx.Input.Bind(&users.Name, "name")
+
+	us, err := models.UpdateUsers(&users)
+	if err != nil {
+		helper.Response(1, err.Error(), u.Controller)
+	} else {
+		helper.Response(0, us, u.Controller)
+	}
+
+	u.ServeJSON()
 }

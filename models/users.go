@@ -71,3 +71,45 @@ func Login(phone string, password string) (isSuccess bool, msg string) {
 	}
 
 }
+
+func UpdateUsers(users *S_user) (data *S_user, err error) {
+	if string(users.Id) != "" {
+		o := orm.NewOrm()
+		o.Using("default")
+
+		var us S_user
+		if er := o.Raw("SELECT * FROM s_user WHERE id = ?", users.Id).QueryRow(&us); er != nil {
+			return nil, errors.New("Error while query " + er.Error())
+		}
+
+		if us == (S_user{}) {
+			return nil, errors.New("Data with id " + string(users.Id) + " not found")
+		}
+
+		if users.Phone != "" {
+			us.Phone = users.Phone
+		}
+		if users.Name != "" {
+			us.Name = users.Name
+		}
+		if users.Email != "" {
+			us.Email = users.Email
+		}
+
+		_, erro := o.Update(&us)
+		if erro != nil {
+			return nil, errors.New("Error when Update data " + err.Error())
+		}
+
+		var userDone S_user
+		if err := o.Raw("SELECT * FROM s_user WHERE id = ?", users.Id).QueryRow(&userDone); err != nil {
+			return nil, errors.New("Error when select user " + err.Error())
+		}
+
+		return &userDone, nil
+
+	}
+
+	return nil, errors.New("Id not null")
+
+}
