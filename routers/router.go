@@ -20,4 +20,7 @@ func init() {
 
 	//LelangRouter
 	beego.Router("/api/lelang/add", &controllers.AuctionController{}, "post:Add")
+	beego.Router("/api/lelang", &controllers.AuctionController{}, "get:Get")
+	beego.Router("/api/lelang/bid", &controllers.AuctionController{}, "post:Bid")
+	//beego.Router("/api/lelang/bid/:auction_id", &controllers.AuctionController{}, "get:GetAllBidder")
 }

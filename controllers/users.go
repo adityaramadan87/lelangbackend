@@ -6,7 +6,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"lelangbackend/helper"
 	"lelangbackend/models"
-	"time"
 )
 
 type UsersController struct {
@@ -21,7 +20,7 @@ func (u *UsersController) Register() {
 	u.Ctx.Input.Bind(&users.Phone, "phone")
 	u.Ctx.Input.Bind(&users.Password, "password")
 
-	users.CreateDate = time.Now().Format("02/01/2006 15:04:05")
+	users.CreateDate = helper.TimeNow()
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(users.Password), bcrypt.DefaultCost)
 	users.Password = string(hashPassword)
 
