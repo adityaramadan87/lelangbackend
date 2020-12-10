@@ -8,8 +8,15 @@ import (
 type Helper struct {
 }
 
-func Response(rc int, msg interface{}, u beego.Controller) {
-	u.Data["json"] = map[string]interface{}{"rc": rc, "response": msg}
+type Res struct {
+	Rc   int         `json:"rc"`
+	Msg  string      `json:"message"`
+	Data interface{} `json:"data"`
+}
+
+func Response(rc int, msg string, data interface{}, u beego.Controller) {
+	u.Data["json"] = Res{rc, msg, data}
+	u.ServeJSON()
 }
 
 func TimeNow() (t string) {

@@ -6,6 +6,7 @@ import (
 	"lelangbackend/helper"
 	"lelangbackend/models"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -38,16 +39,21 @@ func (a *AuctionController) Add() {
 	auctionItem.PublishDate = publishDate
 
 	rc, msg := models.AddAuction(auctionItem)
-	helper.Response(rc, msg, a.Controller)
+	helper.Response(rc, msg, nil, a.Controller)
 
 	a.ServeJSON()
 }
 
+// @Title getAllAuction
+// @Summary getAllAuction
+// @Description get all auction
+// @Success 200 {object} models.AuctionItem
+// @Failure 403 body is empty
+// @router /api/lelang [get]
 func (a *AuctionController) Get() {
-	rc, data := models.GetAllAuction()
-	helper.Response(rc, data, a.Controller)
+	rc, msg, data := models.GetAllAuction()
 
-	a.ServeJSON()
+	helper.Response(rc, msg, data, a.Controller)
 }
 
 func (a *AuctionController) Bid() {
@@ -61,20 +67,17 @@ func (a *AuctionController) Bid() {
 	bid.BidDate = time.Now()
 
 	rc, msg := models.BidAuction(bid)
-	helper.Response(rc, msg, a.Controller)
-
-	a.ServeJSON()
+	helper.Response(rc, msg, nil, a.Controller)
 }
 
-// @router /api/lelang/bid/:id [get]
 func (a *AuctionController) GetAllBidder() {
-	actionID := a.Ctx.Input.Param(":action_id")
-	log.Print("ID : " + actionID)
+	auctionID, err := strconv.Atoi(a.GetString(":auctionid"))
+	if err != nil {
+		log.Print("AUCTION ID ERROR " + err.Error())
+	}
 
-	rc, data := models.GetAllBidder(actionID)
-	helper.Response(rc, data, a.Controller)
-
-	a.ServeJSON()
+	rc, msg, data := models.GetAllBidder(auctionID)
+	helper.Response(rc, msg, data, a.Controller)
 }
 
 func (a *AuctionController) ChooseBidder() {

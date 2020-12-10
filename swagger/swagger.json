@@ -1,0 +1,218 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "beego Test API",
+        "description": "beego has a very cool tools to autogenerate documents for your API",
+        "version": "1.0.0",
+        "termsOfService": "http://beego.me/",
+        "contact": {
+            "email": "astaxie@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "host": "localhost:8080",
+    "basePath": "/api",
+    "paths": {
+        "/users/register" : {
+            "post": {
+                "summary": "Register",
+                "tags": ["User"],
+                "description": "Make new user",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "description": "Name of user",
+                        "in": "body",
+                        "schema": {
+                            "properties": {
+                                "name" : {
+                                    "type": "string"
+                                },
+                                "phone" : {
+                                    "type": "string"
+                                },
+                                "password" : {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success Register",
+                        "schema": {
+                            "properties": {
+                                "rc" : {
+                                    "type": "integer"
+                                },
+                                "message" : {
+                                    "type": "string"
+                                },
+                                "data" : {
+                                    "type": "array",
+                                    "xml": {
+                                        "name": "auctionItem",
+                                        "wrapped": true
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "$ref": "#/definitions/models.User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Failed Register"
+                    }
+                }
+            }
+        },
+        "/lelang" : {
+            "get": {
+                "tags": ["Lelang"],
+                "description": "Get All Auction",
+                "parameters": [],
+                "responses": {
+                    "200" : {
+                        "description": "Success Response",
+                        "schema": {
+                            "properties": {
+                                "rc" : {
+                                    "type": "integer"
+                                },
+                                "message" : {
+                                    "type": "string"
+                                },
+                                "data" : {
+                                    "type": "array",
+                                    "xml": {
+                                        "name": "auctionItem",
+                                        "wrapped": true
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "$ref": "#/definitions/models.AuctionItem"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404" : {
+                        "description": "Failed response"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "BaseResponse" : {
+            "title": "BaseResponse",
+            "type": "object",
+            "properties": {
+                "rc": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "data" : {
+                    "type": "object"
+                }
+            }
+        },
+        "models.User" : {
+            "title": "User",
+            "type": "object",
+            "properties": {
+                "id" : {
+                    "type": "integer"
+                },
+                "name" : {
+                    "type": "string"
+                },
+                "email" : {
+                    "type": "string"
+                },
+                "phone" : {
+                    "type": "string"
+                },
+                "password" : {
+                    "type": "string"
+                },
+                "verified" : {
+                    "type": "boolean"
+                },
+                "ktp" : {
+                    "type": "string"
+                },
+                "create_date" : {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "verified_date" : {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "models.AuctionItem": {
+            "title": "AuctionItem",
+            "type": "object",
+            "properties": {
+                "bid_multiple": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "buy_now": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "current_bid": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "finish_date": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "id_auctioneer": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "id_choosen_bidder": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "publish_date": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "start_bid": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "stock_condition": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

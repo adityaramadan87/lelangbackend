@@ -14,7 +14,7 @@ import (
 
 func init() {
 	//User router
-	beego.Router("/api/users", &controllers.UsersController{}, "post:Register")
+	beego.Router("/api/users/register", &controllers.UsersController{}, "post:Register")
 	beego.Router("/api/users/login", &controllers.UsersController{}, "post:Login")
 	beego.Router("/api/users/update", &controllers.UsersController{}, "post:Update")
 
@@ -22,5 +22,5 @@ func init() {
 	beego.Router("/api/lelang/add", &controllers.AuctionController{}, "post:Add")
 	beego.Router("/api/lelang", &controllers.AuctionController{}, "get:Get")
 	beego.Router("/api/lelang/bid", &controllers.AuctionController{}, "post:Bid")
-	//beego.Router("/api/lelang/bid/:auction_id", &controllers.AuctionController{}, "get:GetAllBidder")
+	beego.Router("/api/lelang/bid/:auctionid", &controllers.AuctionController{}, "get:GetAllBidder")
 }

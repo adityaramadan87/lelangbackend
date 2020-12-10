@@ -60,7 +60,7 @@ func AddAuction(a AuctionItem) (rc int, msg string) {
 	return 1, "Auction Item null"
 }
 
-func GetAllAuction() (rc int, data []AuctionItem) {
+func GetAllAuction() (rc int, msg string, data []AuctionItem) {
 	o := orm.NewOrm()
 	o.Using("default")
 
@@ -70,10 +70,10 @@ func GetAllAuction() (rc int, data []AuctionItem) {
 
 	if err != nil {
 		log.Print(err.Error())
-		return 1, nil
+		return 1, err.Error(), nil
 	}
 
-	return 0, data
+	return 0, "Success", data
 
 }
 
@@ -125,22 +125,16 @@ func BidAuction(b Bid) (rc int, msg string) {
 	return 1, "Bid Data Null"
 }
 
-func GetAllBidder(actionID string) (rc int, data []Bid) {
+func GetAllBidder(actionID int) (rc int, msg string, data []Bid) {
 	o := orm.NewOrm()
 	o.Using("default")
 
-	id, ers := strconv.Atoi(actionID)
-	if ers != nil {
-		log.Print("ERROR " + ers.Error())
-		return 1, nil
-	}
-
-	_, err := o.Raw("SELECT * FROM bid WHERE id_auction_item = ?", id).QueryRows(&data)
+	_, err := o.Raw("SELECT * FROM bid WHERE id_auction_item = ? ORDER BY offer_bid DESC", actionID).QueryRows(&data)
 
 	if err != nil {
 		log.Print(err.Error())
-		return 1, nil
+		return 1, err.Error(), nil
 	}
 
-	return 0, data
+	return 0, "Success", data
 }

@@ -23,31 +23,31 @@ func init() {
 	orm.RegisterModel(new(S_user))
 }
 
-func Register(u S_user) (us *S_user, err error) {
+func Register(u S_user) (us *S_user, msg string, rc int) {
 	o := orm.NewOrm()
 	o.Using("default")
 
 	var userAvailable S_user
 	o.Raw("SELECT * FROM s_user WHERE phone = ?", u.Phone).QueryRow(&userAvailable)
 	if userAvailable != (S_user{}) {
-		return nil, errors.New("number phone already exists")
+		return nil, "number phone already exists", 1
 	}
 
 	id, error := o.Insert(&u)
 	if error != nil {
-		return nil, errors.New(error.Error())
+		return nil, error.Error(), 1
 	}
 
 	var user S_user
 	errQuery := o.Raw("SELECT * FROM s_user WHERE id = ?", id).QueryRow(&user)
 	if errQuery != nil {
-		return nil, errors.New("Error while query " + errQuery.Error())
+		return nil, "Error while query " + errQuery.Error(), 1
 	}
 
-	return &user, nil
+	return &user, "Success", 0
 }
 
-func Login(phone string, password string) (isSuccess bool, msg string) {
+func Login(phone string, password string) (rc int, msg string) {
 	o := orm.NewOrm()
 	o.Using("default")
 
@@ -56,34 +56,34 @@ func Login(phone string, password string) (isSuccess bool, msg string) {
 	var users S_user
 	if err := o.Raw("SELECT * FROM s_user WHERE phone = ?", phone).QueryRow(&users); err != nil {
 		log.Print(errors.New("Error while query " + err.Error()))
-		return false, "Error while query " + err.Error()
+		return 1, "Error while query " + err.Error()
 	}
 
 	if users == (S_user{}) {
-		return false, "user not found please make sure your phone number is correct"
+		return 1, "user not found please make sure your phone number is correct"
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(password))
 	if err != nil {
-		return false, "Password not match"
+		return 1, "Password not match"
 	} else {
-		return true, "Success"
+		return 0, "Success"
 	}
 
 }
 
-func UpdateUsers(users *S_user) (data *S_user, err error) {
+func UpdateUsers(users *S_user) (data *S_user, msg string, rc int) {
 	if string(users.Id) != "" {
 		o := orm.NewOrm()
 		o.Using("default")
 
 		var us S_user
 		if er := o.Raw("SELECT * FROM s_user WHERE id = ?", users.Id).QueryRow(&us); er != nil {
-			return nil, errors.New("Error while query " + er.Error())
+			return nil, "Error while query " + er.Error(), 1
 		}
 
 		if us == (S_user{}) {
-			return nil, errors.New("Data with id " + string(users.Id) + " not found")
+			return nil, "Data with id " + string(users.Id) + " not found", 1
 		}
 
 		if users.Phone != "" {
@@ -98,18 +98,18 @@ func UpdateUsers(users *S_user) (data *S_user, err error) {
 
 		_, erro := o.Update(&us)
 		if erro != nil {
-			return nil, errors.New("Error when Update data " + err.Error())
+			return nil, "Error when Update data " + erro.Error(), 1
 		}
 
 		var userDone S_user
 		if err := o.Raw("SELECT * FROM s_user WHERE id = ?", users.Id).QueryRow(&userDone); err != nil {
-			return nil, errors.New("Error when select user " + err.Error())
+			return nil, "Error when select user " + err.Error(), 1
 		}
 
-		return &userDone, nil
+		return &userDone, "Success", 0
 
 	}
 
-	return nil, errors.New("Id not null")
+	return nil, "Id not null", 1
 
 }
