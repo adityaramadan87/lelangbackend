@@ -28,21 +28,135 @@
                     {
                         "name": "name",
                         "description": "Name of user",
-                        "in": "body",
+                        "in": "formData",
+                        "type": "string"
+                    },
+                    {
+                        "name": "phone",
+                        "description": "Phone of user",
+                        "in": "formData",
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "description": "Password of user",
+                        "in": "formData",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success Register",
                         "schema": {
                             "properties": {
-                                "name" : {
+                                "rc" : {
+                                    "type": "integer"
+                                },
+                                "message" : {
                                     "type": "string"
                                 },
-                                "phone" : {
-                                    "type": "string"
-                                },
-                                "password" : {
-                                    "type": "string"
+                                "data" : {
+                                    "type": "array",
+                                    "xml": {
+                                        "name": "auctionItem",
+                                        "wrapped": true
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "$ref": "#/definitions/models.User"
+                                    }
                                 }
                             }
                         }
                     },
+                    "400" : {
+                        "description": "Failed Register"
+                    }
+                }
+            }
+        },
+        "/users/login" : {
+            "post": {
+                "summary": "Login",
+                "tags": ["User"],
+                "description": "Login User",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "phone",
+                        "description": "Phone of user",
+                        "in": "formData",
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "description": "Password of user",
+                        "in": "formData",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success Login",
+                        "schema": {
+                            "properties": {
+                                "rc": {
+                                    "type": "integer"
+                                },
+                                "message": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "null"
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Failed Login"
+                    }
+                }
+            }
+        },
+        "/users/update" : {
+            "post": {
+                "summary": "Update User",
+                "description": "Update data user",
+                "tags": ["User"],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "description": "ID of user",
+                        "in": "formData",
+                        "type": "integer",
+                        "required": true
+                    },
+                    {
+                        "name": "avatar",
+                        "description": "Avatar of user",
+                        "in": "formData",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "email",
+                        "description": "Email of user",
+                        "in": "formData",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "name",
+                        "description": "Name of user",
+                        "in": "formData",
+                        "type": "string",
+                        "required": false
+                    }
                 ],
                 "responses": {
                     "200" : {
@@ -78,6 +192,7 @@
         "/lelang" : {
             "get": {
                 "tags": ["Lelang"],
+                "summary": "Get All Auction",
                 "description": "Get All Auction",
                 "parameters": [],
                 "responses": {

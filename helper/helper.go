@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"encoding/base64"
+	"fmt"
 	"github.com/astaxie/beego"
 	"time"
 )
@@ -17,6 +19,24 @@ type Res struct {
 func Response(rc int, msg string, data interface{}, u beego.Controller) {
 	u.Data["json"] = Res{rc, msg, data}
 	u.ServeJSON()
+}
+
+func ImageResponse(data []byte, c beego.Controller) {
+	c.Data["json"] = &data
+	c.ServeJSON()
+}
+
+func EncodeBase64(message string) (retour string) {
+	base64Text := make([]byte, base64.StdEncoding.EncodedLen(len(message)))
+	base64.StdEncoding.Encode(base64Text, []byte(message))
+	return string(base64Text)
+}
+
+func DecodeBase64(message string) (retour []byte) {
+	base64Text := make([]byte, base64.StdEncoding.DecodedLen(len(message)))
+	i, _ := base64.StdEncoding.DecodeString(message)
+	fmt.Printf("base64: %s\n", i)
+	return base64Text
 }
 
 func TimeNow() (t string) {

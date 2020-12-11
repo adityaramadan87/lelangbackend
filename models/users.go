@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"strconv"
 )
 
 type S_user struct {
@@ -17,10 +18,17 @@ type S_user struct {
 	Ktp          string `form:"ktp" json:"ktp"`
 	CreateDate   string `form:"create_date" json:"create_date"`
 	VerifiedDate string `form:"verified_date" json:"verified_date"`
+	Avatar       string `form:"avatar" json:"avatar"`
+}
+
+type UserAvatar struct {
+	Id     int    `json:"id"`
+	Avatar string `json:"avatar"`
+	UserId int    `json:"user_id"`
 }
 
 func init() {
-	orm.RegisterModel(new(S_user))
+	orm.RegisterModel(new(S_user), new(UserAvatar))
 }
 
 func Register(u S_user) (us *S_user, msg string, rc int) {
@@ -73,21 +81,38 @@ func Login(phone string, password string) (rc int, msg string) {
 }
 
 func UpdateUsers(users *S_user) (data *S_user, msg string, rc int) {
-	if string(users.Id) != "" {
+	if strconv.Itoa(users.Id) != "" {
 		o := orm.NewOrm()
 		o.Using("default")
 
 		var us S_user
 		if er := o.Raw("SELECT * FROM s_user WHERE id = ?", users.Id).QueryRow(&us); er != nil {
-			return nil, "Error while query " + er.Error(), 1
+			log.Print("Error while query " + er.Error())
 		}
 
 		if us == (S_user{}) {
-			return nil, "Data with id " + string(users.Id) + " not found", 1
+			return nil, "Data with id " + strconv.Itoa(users.Id) + " not found", 1
 		}
 
-		if users.Phone != "" {
-			us.Phone = users.Phone
+		if users.Avatar != "" {
+			var userAvatar UserAvatar
+			if er := o.Raw("SELECT * FROM user_avatar WHERE user_id = ?", us.Id).QueryRow(&userAvatar); er == nil {
+				userAvatar.Avatar = users.Avatar
+				if id, err := o.Update(&userAvatar); err == nil {
+					us.Avatar = "http://localhost:8080/users/avatar/" + strconv.Itoa(int(id))
+				} else {
+					return nil, "Error while update user avatar " + err.Error(), 1
+				}
+			} else {
+				userAvatar.UserId = users.Id
+				userAvatar.Avatar = users.Avatar
+
+				if id, err := o.Insert(&userAvatar); err == nil {
+					us.Avatar = "http://localhost:8080/users/avatar/" + strconv.Itoa(int(id))
+				} else {
+					return nil, "Error while insert user avatar " + err.Error(), 1
+				}
+			}
 		}
 		if users.Name != "" {
 			us.Name = users.Name

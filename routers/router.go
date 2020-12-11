@@ -17,6 +17,7 @@ func init() {
 	beego.Router("/api/users/register", &controllers.UsersController{}, "post:Register")
 	beego.Router("/api/users/login", &controllers.UsersController{}, "post:Login")
 	beego.Router("/api/users/update", &controllers.UsersController{}, "post:Update")
+	beego.Router("/users/avatar/:avatarid", &controllers.UsersController{}, "*:GetUserAvatar")
 
 	//LelangRouter
 	beego.Router("/api/lelang/add", &controllers.AuctionController{}, "post:Add")
