@@ -1,12 +1,18 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"image/jpeg"
+	"image/png"
 	"lelangbackend/helper"
 	"lelangbackend/models"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -82,4 +88,55 @@ func (a *AuctionController) GetAllBidder() {
 
 func (a *AuctionController) ChooseBidder() {
 
+}
+
+func (a *AuctionController) GetAuctionPicture() {
+	imgID, _ := strconv.Atoi(a.GetString(":pictureid"))
+
+	o := orm.NewOrm()
+	o.Using("default")
+
+	var img string
+	if err := o.Raw("SELECT image FROM auction_picture WHERE id = ?", imgID).QueryRow(&img); err != nil {
+		helper.Response(1, "Error while get Image "+err.Error(), nil, a.Controller)
+		return
+	}
+
+	coI := strings.Index(img, ",")
+	rawImage := img[coI+1:]
+
+	// Encoded Image DataUrl //
+	unbased, _ := base64.StdEncoding.DecodeString(string(rawImage))
+	res := bytes.NewReader(unbased)
+
+	switch strings.TrimSuffix(img[5:coI], ";base64") {
+	case "image/png":
+		pngImg, _ := png.Decode(res)
+
+		buffer := new(bytes.Buffer)
+		if err := jpeg.Encode(buffer, pngImg, nil); err != nil {
+			log.Println("unable to encode image.")
+		}
+
+		a.Ctx.Request.Header.Set("Content-Type", "image/png")
+		a.Ctx.Request.Header.Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+
+		if _, err := a.Ctx.ResponseWriter.Write(buffer.Bytes()); err != nil {
+			log.Print("errrrrorr", err.Error())
+		}
+	case "image/jpeg":
+		jpgImg, _ := jpeg.Decode(res)
+
+		buffer := new(bytes.Buffer)
+		if err := jpeg.Encode(buffer, jpgImg, nil); err != nil {
+			log.Println("unable to encode image.")
+		}
+
+		a.Ctx.Request.Header.Set("Content-Type", "image/png")
+		a.Ctx.Request.Header.Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+
+		if _, err := a.Ctx.ResponseWriter.Write(buffer.Bytes()); err != nil {
+			log.Print("errrrrorr", err.Error())
+		}
+	}
 }

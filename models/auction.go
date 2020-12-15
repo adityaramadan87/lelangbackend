@@ -20,6 +20,7 @@ type AuctionItem struct {
 	FinishDate      time.Time `json:"finish_date"`
 	PublishDate     time.Time `json:"publish_date"`
 	IdChoosenBidder int       `json:"id_choosen_bidder"`
+	ItemName        string    `json:"item_name"`
 }
 
 type Bid struct {
@@ -30,8 +31,13 @@ type Bid struct {
 	BidDate       time.Time `json:"bid_date"`
 }
 
+type AuctionPicture struct {
+	Id    int    `json:"id"`
+	Image string `json:"image"`
+}
+
 func init() {
-	orm.RegisterModel(new(AuctionItem), new(Bid))
+	orm.RegisterModel(new(AuctionItem), new(Bid), new(AuctionPicture))
 }
 
 func AddAuction(a AuctionItem) (rc int, msg string) {
@@ -41,6 +47,19 @@ func AddAuction(a AuctionItem) (rc int, msg string) {
 	if a != (AuctionItem{}) {
 
 		a.CurrentBid = 0
+
+		if a.Picture != "" {
+			var auctPicture AuctionPicture
+			auctPicture.Image = a.Picture
+
+			if id, err := o.Insert(&auctPicture); err == nil {
+				a.Picture = "http://localhost:8080/auction/picture/" + strconv.Itoa(int(id))
+			} else {
+				return 1, "Error while insert auction pict " + err.Error()
+			}
+		} else {
+			return 1, "Picture is required"
+		}
 
 		var user S_user
 		o.Raw("SELECT * FROM s_user WHERE id = ?", a.IdAuctioneer).QueryRow(&user)

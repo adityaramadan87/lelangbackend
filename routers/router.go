@@ -24,4 +24,5 @@ func init() {
 	beego.Router("/api/lelang", &controllers.AuctionController{}, "get:Get")
 	beego.Router("/api/lelang/bid", &controllers.AuctionController{}, "post:Bid")
 	beego.Router("/api/lelang/bid/:auctionid", &controllers.AuctionController{}, "get:GetAllBidder")
+	beego.Router("/auction/picture/:pictureid", &controllers.AuctionController{}, "*:GetAuctionPicture")
 }

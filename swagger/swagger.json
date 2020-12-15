@@ -1,12 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "beego Test API",
+        "title": "Lelang Api",
         "description": "beego has a very cool tools to autogenerate documents for your API",
         "version": "1.0.0",
         "termsOfService": "http://beego.me/",
         "contact": {
-            "email": "astaxie@gmail.com"
+            "email": "rizkyadytia87@gmail.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -225,6 +225,201 @@
                     }
                 }
             }
+        },
+        "/lelang/add" : {
+            "post": {
+                "summary": "Add Auction",
+                "tags": ["Lelang"],
+                "description": "Add New Auction",
+                "parameters": [
+                    {
+                        "name": "picture",
+                        "description": "Picture of item",
+                        "in": "formData",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "buy_now",
+                        "description": "Price of Auction Buy Now",
+                        "in": "formData",
+                        "type": "number",
+                        "required": true
+                    },
+                    {
+                        "name": "bid_multiple",
+                        "description": "Bid multiple of Auction",
+                        "in": "formData",
+                        "type": "number",
+                        "required": true
+                    },
+                    {
+                        "name": "stock_condition",
+                        "description": "Condition stock of Auction Item",
+                        "in": "formData",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "start_bid",
+                        "description": "Price start bid of Auction",
+                        "in": "formData",
+                        "type": "number",
+                        "required": true
+                    },
+                    {
+                        "name": "description",
+                        "description": "Description of Auction",
+                        "in": "formData",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "item_name",
+                        "description": "Item name of Auction Item",
+                        "in": "formData",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "id_auctioneer",
+                        "description": "User id who enters auction item",
+                        "in": "formData",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "finish_date",
+                        "description": "Finish date of auction item",
+                        "in": "formData",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "publish_date",
+                        "description": "Publish date of auction item",
+                        "in": "formData",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success Response",
+                        "schema": {
+                            "properties": {
+                                "rc" : {
+                                    "type": "integer"
+                                },
+                                "message" : {
+                                    "type": "string"
+                                },
+                                "data" : {
+                                    "type": "null"
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Failed Response"
+                    }
+                }
+            }
+        },
+        "/lelang/bid" : {
+            "post": {
+                "summary": "Bid Auction",
+                "tags": ["Lelang"],
+                "description": "Bid to the auction",
+                "parameters": [
+                    {
+                        "name": "bidder_id",
+                        "description": "User id",
+                        "in": "formData",
+                        "type": "integer",
+                        "required": true
+                    },
+                    {
+                        "name": "auction_id",
+                        "description": "Id  of Auction",
+                        "in": "formData",
+                        "type": "integer",
+                        "required": true
+                    },
+                    {
+                        "name": "offer_bid",
+                        "description": "Bid offer",
+                        "in": "formData",
+                        "type": "number",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success Response",
+                        "schema": {
+                            "properties": {
+                                "rc" : {
+                                    "type": "integer"
+                                },
+                                "message" : {
+                                    "type": "string"
+                                },
+                                "data" : {
+                                    "type": "null"
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Failed Response"
+                    }
+                }
+            }
+        },
+        "/lelang/bid/{auctionid}" : {
+            "get": {
+                "summary": "Get All Bidder",
+                "description": "Get all bidder",
+                "tags": ["Lelang"],
+                "parameters": [
+                    {
+                        "name": "auctionid",
+                        "type": "integer",
+                        "required": true,
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success Response",
+                        "schema": {
+                            "properties": {
+                                "rc" : {
+                                    "type": "integer"
+                                },
+                                "message" : {
+                                    "type": "string"
+                                },
+                                "data" : {
+                                    "type": "array",
+                                    "xml": {
+                                        "name": "Bid",
+                                        "wrapped": true
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "$ref": "#/definitions/models.Bid"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Failed Response"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -297,6 +492,9 @@
                 "description": {
                     "type": "string"
                 },
+                "item_name": {
+                    "type": "string"
+                },
                 "finish_date": {
                     "type": "string",
                     "format": "datetime"
@@ -326,6 +524,32 @@
                 },
                 "stock_condition": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Bid" : {
+            "title": "Bid",
+            "type": "object",
+            "properties": {
+                "id" : {
+                    "type": "integer",
+                    "format": "int"
+                },
+                "id_auction_item" : {
+                    "type": "integer",
+                    "format": "int"
+                },
+                "id_bidder" : {
+                    "type": "integer",
+                    "format": "int"
+                },
+                "offer_bid": {
+                    "type": "number",
+                    "format": "long"
+                },
+                "bid_date" : {
+                    "type": "string",
+                    "format": "datetime"
                 }
             }
         }
