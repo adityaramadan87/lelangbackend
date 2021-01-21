@@ -120,7 +120,7 @@
                 }
             }
         },
-        "/users/update" : {
+        "/v1/users/update" : {
             "post": {
                 "summary": "Update User",
                 "description": "Update data user",
@@ -129,6 +129,13 @@
                     "application/json"
                 ],
                 "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Authorization Header",
+                        "required": true,
+                        "type": "string"
+                    },
                     {
                         "name": "id",
                         "description": "ID of user",
@@ -189,12 +196,20 @@
                 }
             }
         },
-        "/lelang" : {
+        "/v1/lelang" : {
             "get": {
                 "tags": ["Lelang"],
                 "summary": "Get All Auction",
                 "description": "Get All Auction",
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Authorization Header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200" : {
                         "description": "Success Response",
@@ -222,16 +237,26 @@
                     },
                     "404" : {
                         "description": "Failed response"
+                    },
+                    "403" : {
+                        "description": "Need Authorization Header"
                     }
                 }
             }
         },
-        "/lelang/add" : {
+        "/v1/lelang/add" : {
             "post": {
                 "summary": "Add Auction",
                 "tags": ["Lelang"],
                 "description": "Add New Auction",
                 "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Authorization Header",
+                        "required": true,
+                        "type": "string"
+                    },
                     {
                         "name": "picture",
                         "description": "Picture of item",
@@ -326,12 +351,19 @@
                 }
             }
         },
-        "/lelang/bid" : {
+        "/v1/lelang/bid" : {
             "post": {
                 "summary": "Bid Auction",
                 "tags": ["Lelang"],
                 "description": "Bid to the auction",
                 "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Authorization Header",
+                        "required": true,
+                        "type": "string"
+                    },
                     {
                         "name": "bidder_id",
                         "description": "User id",
@@ -377,12 +409,19 @@
                 }
             }
         },
-        "/lelang/bid/{auctionid}" : {
+        "/v1/lelang/bid/{auctionid}" : {
             "get": {
                 "summary": "Get All Bidder",
                 "description": "Get all bidder",
                 "tags": ["Lelang"],
                 "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Authorization Header",
+                        "required": true,
+                        "type": "string"
+                    },
                     {
                         "name": "auctionid",
                         "type": "integer",

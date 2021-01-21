@@ -55,7 +55,7 @@ func Register(u S_user) (us *S_user, msg string, rc int) {
 	return &user, "Success", 0
 }
 
-func Login(phone string, password string) (rc int, msg string) {
+func Login(phone string, password string) (rc int, msg string, ss *Session) {
 	o := orm.NewOrm()
 	o.Using("default")
 
@@ -64,18 +64,23 @@ func Login(phone string, password string) (rc int, msg string) {
 	var users S_user
 	if err := o.Raw("SELECT * FROM s_user WHERE phone = ?", phone).QueryRow(&users); err != nil {
 		log.Print(errors.New("Error while query " + err.Error()))
-		return 1, "Error while query " + err.Error()
+		return 1, "Error while query " + err.Error(), nil
 	}
 
 	if users == (S_user{}) {
-		return 1, "user not found please make sure your phone number is correct"
+		return 1, "user not found please make sure your phone number is correct", nil
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(password))
 	if err != nil {
-		return 1, "Password not match"
+		return 1, "Password not match", nil
 	} else {
-		return 0, "Success"
+
+		if ss, err := CreateToken(users.Id); err != nil {
+			return 1, err.Error(), nil
+		} else {
+			return 0, "Success", ss
+		}
 	}
 
 }

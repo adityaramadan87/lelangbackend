@@ -51,9 +51,9 @@ func (u *UsersController) Login() {
 	//	return
 	//}
 
-	rc, msg := models.Login(users.Phone, users.Password)
+	rc, msg, ss := models.Login(users.Phone, users.Password)
 
-	helper.Response(rc, msg, nil, u.Controller)
+	helper.Response(rc, msg, ss, u.Controller)
 }
 
 func (u *UsersController) Update() {
