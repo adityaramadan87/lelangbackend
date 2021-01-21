@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+	"fmt"
 	"github.com/astaxie/beego/orm"
 	"github.com/dgrijalva/jwt-go"
 	"os"
@@ -58,4 +60,24 @@ func CreateToken(userId int) (*Session, error) {
 		return &data, nil
 	}
 
+}
+
+func ValidateToken(tokenString string) (err error) {
+
+	key := os.Getenv("KEY_LELANG")
+
+	token, err := jwt.ParseWithClaims(tokenString, &SessionClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(key), nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if claims, ok := token.Claims.(*SessionClaims); ok && token.Valid {
+		fmt.Printf("%v %v", claims.UserId, claims.StandardClaims.ExpiresAt)
+		return nil
+	}
+
+	return errors.New("Claims or token null")
 }

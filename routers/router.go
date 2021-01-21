@@ -12,8 +12,22 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"lelangbackend/controllers"
+	"lelangbackend/models"
 	"strings"
 )
+
+var authFilter = func(context *context.Context) {
+	header := strings.Split(context.Input.Header("Authorization"), " ")
+	if len(header) != 2 {
+		context.Abort(403, "Unauthorized")
+	}
+
+	if err := models.ValidateToken(header[1]); err != nil {
+		context.Abort(403, err.Error())
+	}
+
+	fmt.Println(context.Input.URL())
+}
 
 func init() {
 	//User router
@@ -27,14 +41,7 @@ func init() {
 		beego.NSRouter("/users/register", &controllers.UsersController{}, "post:Register"),
 
 		beego.NSNamespace("/v1",
-			beego.NSBefore(func(context *context.Context) {
-				header := strings.Split(context.Input.Header("Authorization"), " ")
-				if len(header) != 2 {
-					context.Abort(403, "Unauthorized")
-				}
-
-				fmt.Println(context.Input.URL())
-			}),
+			beego.NSBefore(authFilter),
 			beego.NSRouter("/lelang", &controllers.AuctionController{}, "get:Get"),
 			beego.NSRouter("/lelang/add", &controllers.AuctionController{}, "post:Add"),
 			beego.NSRouter("/lelang/bid", &controllers.AuctionController{}, "post:Bid"),
